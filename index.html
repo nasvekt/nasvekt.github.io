@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NASVEKT — The Eye</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --black: #050505;
+  --obsidian: #0d0d0d;
+  --gold: #c8a84b;
+  --gold-dim: #7a5f20;
+  --white: #e8e3d8;
+  --cream: #f5f0e8;
+  --red: #c0392b;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–black);
+color: var(–white);
+font-family: ‘Space Mono’, monospace;
+overflow-x: hidden;
+cursor: crosshair;
+}
+
+body::after {
+content: ‘’;
+position: fixed;
+inset: 0;
+background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+pointer-events: none;
+z-index: 9000;
+}
+
+/* NAV */
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+padding: 1.2rem clamp(1.5rem, 5vw, 4rem);
+display: flex;
+justify-content: space-between;
+align-items: center;
+z-index: 100;
+background: linear-gradient(to bottom, rgba(5,5,5,0.95), transparent);
+backdrop-filter: blur(4px);
+}
+.nav-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.4rem;
+letter-spacing: 0.15em;
+color: var(–gold);
+text-decoration: none;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+font-size: 0.6rem;
+letter-spacing: 0.3em;
+text-transform: uppercase;
+color: rgba(232,227,216,0.5);
+text-decoration: none;
+transition: color 0.3s;
+}
+.nav-links a:hover { color: var(–gold); }
+@media (max-width: 500px) { .nav-links { display: none; } }
+
+/* HERO */
+#hero {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+position: relative;
+overflow: hidden;
+padding: 2rem;
+background: var(–black);
+}
+.hero-bg {
+position: absolute; inset: 0;
+background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(200,168,75,0.07) 0%, transparent 70%);
+pointer-events: none;
+}
+.eye-container {
+width: 160px; height: 80px;
+margin-bottom: 3rem;
+animation: eye-pulse 4s ease-in-out infinite;
+}
+@keyframes eye-pulse {
+0%,100% { filter: drop-shadow(0 0 8px rgba(200,168,75,0.3)); }
+50%      { filter: drop-shadow(0 0 22px rgba(200,168,75,0.65)); }
+}
+.eye-svg { width: 100%; height: 100%; }
+.pupil-dot { animation: gaze 6s ease-in-out infinite; transform-origin: 80px 40px; }
+@keyframes gaze {
+0%,100% { transform: translateX(0); }
+25%     { transform: translateX(8px); }
+75%     { transform: translateX(-8px); }
+}
+.eyelid-blink { animation: blink 7s ease-in-out infinite; transform-origin: 80px 40px; }
+@keyframes blink {
+0%,90%,100% { transform: scaleY(1); }
+95%         { transform: scaleY(0.05); }
+}
+.hero-eyebrow {
+font-size: 0.65rem;
+letter-spacing: 0.4em;
+color: var(–gold-dim);
+text-transform: uppercase;
+margin-bottom: 1rem;
+opacity: 0;
+animation: fadein 1s 0.3s forwards;
+}
+.hero-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(5rem, 18vw, 14rem);
+line-height: 0.88;
+letter-spacing: -0.02em;
+text-align: center;
+color: var(–white);
+opacity: 0;
+animation: fadein 1s 0.6s forwards;
+}
+.hero-title span { color: var(–gold); display: block; }
+.hero-tagline {
+margin-top: 2.5rem;
+font-family: ‘DM Serif Display’, serif;
+font-style: italic;
+font-size: clamp(1rem, 2.5vw, 1.4rem);
+color: rgba(232,227,216,0.6);
+text-align: center;
+max-width: 500px;
+line-height: 1.6;
+opacity: 0;
+animation: fadein 1s 1.2s forwards;
+}
+.hero-tagline em { color: var(–gold); font-style: normal; }
+.scroll-cue {
+position: absolute;
+bottom: 2.5rem; left: 50%;
+transform: translateX(-50%);
+font-size: 0.6rem;
+letter-spacing: 0.3em;
+color: rgba(232,227,216,0.35);
+text-transform: uppercase;
+opacity: 0;
+animation: fadein 1s 2s forwards;
+display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+}
+.scroll-line {
+width: 1px; height: 40px;
+background: linear-gradient(to bottom, var(–gold), transparent);
+animation: scroll-pulse 2s ease-in-out infinite;
+}
+@keyframes scroll-pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes fadein { to { opacity: 1; } }
+
+/* TICKER */
+.ticker-wrap {
+overflow: hidden;
+background: rgba(200,168,75,0.07);
+border-top: 1px solid rgba(200,168,75,0.15);
+border-bottom: 1px solid rgba(200,168,75,0.15);
+padding: 0.8rem 0;
+white-space: nowrap;
+}
+.ticker {
+display: inline-block;
+animation: ticker 30s linear infinite;
+font-size: 0.65rem;
+letter-spacing: 0.35em;
+color: var(–gold-dim);
+text-transform: uppercase;
+}
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* DIVIDER */
+.divider {
+width: 100%;
+height: 1px;
+background: linear-gradient(to right, transparent, rgba(200,168,75,0.25), transparent);
+}
+
+/* SECTION BASE */
+section { padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 8vw, 8rem); position: relative; }
+
+.section-label {
+font-size: 0.6rem;
+letter-spacing: 0.5em;
+text-transform: uppercase;
+margin-bottom: 0.8rem;
+}
+
+.section-number {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 8rem;
+position: absolute;
+right: clamp(1rem, 5vw, 4rem);
+top: clamp(3rem, 8vw, 5rem);
+line-height: 1;
+pointer-events: none;
+user-select: none;
+}
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ═══════════════════════════
+DARK SECTIONS — black bg, light text
+#what #eye-section #human-file #enemy #human-code
+═══════════════════════════ */
+#what        { background: var(–obsidian); }
+#eye-section { background: var(–obsidian); }
+#human-file  { background: var(–obsidian); }
+#enemy       { background: var(–obsidian); }
+#human-code  { background: var(–obsidian); }
+
+#what .section-label,
+#eye-section .section-label,
+#human-file .section-label,
+#enemy .section-label,
+#human-code .section-label { color: var(–gold-dim); }
+
+#what .section-number,
+#eye-section .section-number,
+#human-file .section-number,
+#enemy .section-number,
+#human-code .section-number { color: rgba(200,168,75,0.05); }
+
+#what h2,
+#eye-section h2,
+#human-file h2,
+#enemy h2,
+#human-code h2 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(2.5rem, 6vw, 5rem);
+line-height: 1;
+letter-spacing: 0.02em;
+color: var(–white);
+margin-bottom: 2.5rem;
+}
+#what h2 .gold,
+#eye-section h2 .gold,
+#human-file h2 .gold,
+#enemy h2 .gold,
+#human-code h2 .gold { color: var(–gold); }
+
+/* ═══════════════════════════
+LIGHT SECTIONS — cream bg, black text
+#laws #pyramid #execution #mission footer
+═══════════════════════════ */
+#laws      { background: var(–cream); }
+#pyramid   { background: var(–cream); text-align: center; overflow: hidden; }
+#execution { background: var(–cream); }
+#mission   { background: var(–cream); text-align: center; overflow: hidden; padding: clamp(5rem, 12vw, 10rem) clamp(1.5rem, 8vw, 8rem); }
+footer     { background: var(–cream); }
+
+#laws .section-label,
+#pyramid .section-label,
+#execution .section-label { color: var(–gold-dim); }
+
+#laws .section-number,
+#pyramid .section-number,
+#execution .section-number { color: rgba(0,0,0,0.04); }
+
+#laws h2,
+#pyramid h2,
+#execution h2 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(2.5rem, 6vw, 5rem);
+line-height: 1;
+letter-spacing: 0.02em;
+color: #000000;
+margin-bottom: 2.5rem;
+}
+#laws h2 .gold,
+#pyramid h2 .gold,
+#execution h2 .gold { color: var(–gold-dim); }
+
+/* ── SECTION 01: WHAT ── */
+#what { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+@media (max-width: 768px) { #what { grid-template-columns: 1fr; } }
+
+.three-things { display: flex; flex-direction: column; gap: 2rem; }
+.thing {
+border-left: 2px solid var(–gold-dim);
+padding-left: 1.5rem;
+opacity: 0.5;
+transition: opacity 0.4s, border-color 0.4s;
+}
+.thing:hover { opacity: 1; border-color: var(–gold); }
+.thing-name {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.6rem;
+color: var(–gold);
+letter-spacing: 0.05em;
+margin-bottom: 0.4rem;
+}
+.thing-desc { font-size: 0.78rem; line-height: 1.7; color: rgba(232,227,216,0.85); max-width: 340px; }
+
+.principle-box { border: 1px solid rgba(200,168,75,0.2); padding: 2.5rem; position: relative; overflow: hidden; }
+.principle-box::before {
+content: ‘”’;
+font-family: ‘DM Serif Display’, serif;
+font-size: 12rem;
+color: rgba(200,168,75,0.05);
+position: absolute; top: -2rem; left: 0.5rem;
+line-height: 1; pointer-events: none;
+}
+.principle-text {
+font-family: ‘DM Serif Display’, serif;
+font-style: italic;
+font-size: clamp(1.1rem, 2vw, 1.4rem);
+line-height: 1.6;
+color: var(–white);
+position: relative; z-index: 1;
+}
+.principle-text em { color: var(–gold); font-style: normal; }
+.what-credit { margin-top: 1.5rem; font-size: 0.7rem; letter-spacing: 0.1em; color: rgba(232,227,216,0.4); }
+
+/* ── SECTION 02: LAWS ── */
+.laws-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 1px;
+background: rgba(0,0,0,0.1);
+border: 1px solid rgba(0,0,0,0.1);
+margin-top: 3rem;
+}
+@media (max-width: 768px) { .laws-grid { grid-template-columns: 1fr; } }
+
+#laws > .reveal > p { color: #000000; font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.law-card {
+background: #ffffff;
+padding: 3rem 2rem;
+position: relative;
+overflow: hidden;
+transition: background 0.3s;
+}
+.law-card:hover { background: #fdf8ef; }
+.law-card::after {
+content: ‘’;
+position: absolute;
+bottom: 0; left: 0;
+width: 100%; height: 3px;
+background: #000000;
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.5s ease;
+}
+.law-card:hover::after { transform: scaleX(1); }
+.law-num { font-family: ‘Bebas Neue’, sans-serif; font-size: 5rem; color: rgba(0,0,0,0.06); line-height: 1; margin-bottom: 0.5rem; }
+.law-title { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.8rem; color: #000000; letter-spacing: 0.04em; margin-bottom: 1rem; }
+.law-body { font-size: 0.78rem; line-height: 1.8; color: #000000; }
+
+/* ── SECTION 03: EYE ── */
+.sees-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+@media (max-width: 600px) { .sees-grid { grid-template-columns: 1fr; } }
+
+#eye-section > .reveal > p { color: rgba(232,227,216,0.85); font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.see-item { padding: 2rem; border: 1px solid rgba(200,168,75,0.12); transition: border-color 0.3s; cursor: default; }
+.see-item:hover { border-color: rgba(200,168,75,0.4); }
+.see-index { font-size: 0.6rem; letter-spacing: 0.4em; color: var(–gold-dim); text-transform: uppercase; margin-bottom: 1rem; }
+.see-name { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.8rem; color: var(–white); margin-bottom: 0.8rem; }
+.see-desc { font-size: 0.78rem; line-height: 1.8; color: rgba(232,227,216,0.85); }
+.see-desc strong { color: var(–gold); }
+
+/* ── SECTION 04: PYRAMID ── */
+#pyramid > .reveal > p { color: #000000; font-size: 0.875rem; line-height: 1.9; margin: 0 auto; }
+
+.pyramid-visual {
+margin: 3rem auto;
+max-width: 600px;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.pyr-level {
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘Bebas Neue’, sans-serif;
+letter-spacing: 0.1em;
+color: #000000;
+transition: filter 0.3s;
+cursor: default;
+}
+.pyr-level:hover { filter: brightness(0.9); }
+.pyr-1 { width: 30%; height: 72px; font-size: 1rem; background: var(–gold); clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); }
+.pyr-2 { width: 55%; height: 72px; font-size: 1rem; background: rgba(200,168,75,0.5); border: 1px solid rgba(0,0,0,0.1); clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%); }
+.pyr-3 { width: 80%; height: 72px; font-size: 0.95rem; background: rgba(200,168,75,0.32); border: 1px solid rgba(0,0,0,0.08); clip-path: polygon(4% 0%, 96% 0%, 100% 100%, 0% 100%); }
+.pyr-4 { width: 100%; height: 72px; font-size: 0.85rem; background: rgba(200,168,75,0.18); border: 1px solid rgba(0,0,0,0.06); }
+
+.pyr-label { position: relative; z-index: 1; color: #000000; }
+.pyr-sublabel { font-family: ‘Space Mono’, monospace; font-size: 0.48rem; letter-spacing: 0.18em; color: rgba(0,0,0,0.7); display: block; font-weight: 400; margin-top: 0.2rem; }
+
+.pyramid-law { font-size: 0.65rem; letter-spacing: 0.22em; color: #000000; margin-top: 2rem; text-transform: uppercase; }
+.pyramid-law span { color: var(–gold-dim); font-weight: 700; }
+
+/* ── SECTION 05: HUMAN FILE ── */
+.file-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 3rem; }
+
+#human-file > .reveal > p { color: rgba(232,227,216,0.85); font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.file-attr {
+border: 1px solid rgba(200,168,75,0.15);
+padding: 1.5rem 1rem;
+text-align: center;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.1rem;
+letter-spacing: 0.08em;
+color: var(–white);
+cursor: default;
+transition: background 0.3s, border-color 0.3s;
+}
+.file-attr:hover { background: rgba(200,168,75,0.07); border-color: rgba(200,168,75,0.35); }
+.file-attr-icon { display: block; margin-bottom: 0.6rem; line-height: 1; }
+.file-insight { margin-top: 3rem; border-left: 3px solid var(–gold); padding-left: 1.5rem; max-width: 600px; }
+.file-insight p { color: rgba(232,227,216,0.85); font-size: 0.82rem; line-height: 1.8; }
+.file-insight strong { color: var(–gold); }
+
+/* ── SECTION 06: EXECUTION ── */
+#execution > .reveal > p { color: #000000; font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.exec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+@media (max-width: 640px) { .exec-grid { grid-template-columns: 1fr; } }
+
+.exec-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.12); padding: 2.5rem; position: relative; overflow: hidden; }
+.exec-card::before { content: ‘’; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #000000; }
+.exec-brand { font-family: ‘Bebas Neue’, sans-serif; font-size: 2.5rem; color: #000000; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+.exec-phase { font-size: 0.6rem; letter-spacing: 0.4em; color: rgba(0,0,0,0.55); text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.exec-steps { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+.exec-steps li { font-size: 0.78rem; color: #000000; display: flex; align-items: flex-start; gap: 0.8rem; line-height: 1.5; }
+.exec-steps li::before { content: ‘→’; color: #000000; flex-shrink: 0; }
+.status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #000000; animation: dot-blink 2s ease-in-out infinite; }
+@keyframes dot-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+.exec-future { margin-top: 2rem; border: 1px dashed rgba(0,0,0,0.2); background: #ffffff; padding: 1.5rem; max-width: 600px; }
+.exec-future .section-label { color: var(–gold-dim); margin-bottom: 0.5rem; }
+.exec-future p { font-size: 0.78rem; color: #000000; line-height: 1.8; max-width: 100%; }
+
+/* ── SECTION 07: ENEMY ── */
+#enemy > .reveal > p { color: rgba(232,227,216,0.85); font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.enemy-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+@media (max-width: 600px) { .enemy-list { grid-template-columns: 1fr; } }
+.enemy-item { padding: 1.5rem; border: 1px solid rgba(192,57,43,0.18); position: relative; }
+.enemy-item::before { content: ‘’; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(–red); opacity: 0.6; }
+.enemy-name { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.4rem; color: var(–red); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+.enemy-desc { font-size: 0.75rem; line-height: 1.7; color: rgba(232,227,216,0.85); }
+
+/* ── SECTION 08: HUMAN CODE ── */
+#human-code > .reveal > p { color: rgba(232,227,216,0.85); font-size: 0.875rem; line-height: 1.9; max-width: 620px; }
+
+.code-rules { display: flex; flex-direction: column; border: 1px solid rgba(200,168,75,0.1); overflow: hidden; margin-top: 3rem; }
+.code-rule { display: flex; align-items: stretch; border-bottom: 1px solid rgba(200,168,75,0.08); transition: background 0.3s; cursor: default; }
+.code-rule:last-child { border-bottom: none; }
+.code-rule:hover { background: rgba(200,168,75,0.04); }
+.rule-num { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.4rem; color: rgba(200,168,75,0.3); padding: 1.4rem 1.5rem; border-right: 1px solid rgba(200,168,75,0.08); min-width: 70px; display: flex; align-items: center; justify-content: center; }
+.rule-text { padding: 1.4rem 1.5rem; font-size: 0.8rem; line-height: 1.7; color: rgba(232,227,216,0.9); display: flex; align-items: center; }
+
+/* ── MISSION ── */
+#mission::before {
+content: ‘NASVEKT’;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(8rem, 22vw, 20rem);
+color: rgba(0,0,0,0.04);
+position: absolute;
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+white-space: nowrap;
+pointer-events: none;
+user-select: none;
+}
+.mission-label { font-size: 0.6rem; letter-spacing: 0.5em; color: var(–gold-dim); text-transform: uppercase; margin-bottom: 2rem; }
+.mission-statement {
+font-family: ‘DM Serif Display’, serif;
+font-size: clamp(1.2rem, 3vw, 2rem);
+line-height: 1.7;
+color: #000000;
+max-width: 800px;
+margin: 0 auto 3rem;
+position: relative;
+z-index: 1;
+}
+.mission-statement em { color: var(–gold-dim); font-style: normal; font-weight: 700; }
+.mission-version { font-size: 0.6rem; letter-spacing: 0.4em; color: rgba(0,0,0,0.55); text-transform: uppercase; position: relative; z-index: 1; }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid rgba(0,0,0,0.12); padding: 3rem clamp(1.5rem, 8vw, 8rem); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-brand { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.5rem; letter-spacing: 0.1em; color: #000000; }
+.footer-note { font-size: 0.6rem; letter-spacing: 0.25em; color: rgba(0,0,0,0.6); text-transform: uppercase; }
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+  <a href="#" class="nav-logo">NASVEKT</a>
+  <ul class="nav-links">
+    <li><a href="#what">What</a></li>
+    <li><a href="#laws">Laws</a></li>
+    <li><a href="#pyramid">Structure</a></li>
+    <li><a href="#execution">Execution</a></li>
+    <li><a href="#mission">Mission</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="eye-container">
+    <svg class="eye-svg" viewBox="0 0 160 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#c8a84b" stop-opacity="0.95"/>
+          <stop offset="60%" stop-color="#7a5f20" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#050505" stop-opacity="1"/>
+        </radialGradient>
+        <clipPath id="eyeClip">
+          <path d="M4 40 Q80 4 156 40 Q80 76 4 40Z"/>
+        </clipPath>
+      </defs>
+      <path d="M4 40 Q80 4 156 40 Q80 76 4 40Z" stroke="#c8a84b" stroke-width="1.5" fill="none" opacity="0.7"/>
+      <g class="eyelid-blink" clip-path="url(#eyeClip)">
+        <circle cx="80" cy="40" r="22" fill="url(#irisGrad)"/>
+        <g class="pupil-dot">
+          <circle cx="80" cy="40" r="10" fill="#050505"/>
+          <circle cx="75" cy="36" r="3" fill="rgba(200,168,75,0.2)"/>
+        </g>
+        <circle cx="80" cy="40" r="22" fill="none" stroke="rgba(200,168,75,0.15)" stroke-width="1"/>
+        <circle cx="80" cy="40" r="16" fill="none" stroke="rgba(200,168,75,0.08)" stroke-width="0.5"/>
+      </g>
+      <circle cx="4" cy="40" r="2" fill="#c8a84b" opacity="0.7"/>
+      <circle cx="156" cy="40" r="2" fill="#c8a84b" opacity="0.7"/>
+    </svg>
+  </div>
+  <p class="hero-eyebrow">Architecture v0.2 — Living Document</p>
+  <h1 class="hero-title">NAS<span>VEKT</span></h1>
+  <p class="hero-tagline">The Eye of the World. It sees the <em>vector</em> before anyone else.<br/>It moves at a speed that makes others look frozen.</p>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    <span>Read the game</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+
+<div class="ticker-wrap">
+  <div class="ticker">SPEED IS THE ONLY CURRENCY &nbsp;·&nbsp; PRIVATE DATA IS TOTAL POWER &nbsp;·&nbsp; VISION IS A WEAPON &nbsp;·&nbsp; THE GAP IS WHERE ALL OPPORTUNITY LIVES &nbsp;·&nbsp; DATA FLOWS UP — CONTROL FLOWS DOWN &nbsp;·&nbsp; THE WORLD VECTOR: TOTAL AI INTEGRATION &nbsp;·&nbsp; SPEED IS THE ONLY CURRENCY &nbsp;·&nbsp; PRIVATE DATA IS TOTAL POWER &nbsp;·&nbsp; VISION IS A WEAPON &nbsp;·&nbsp; THE GAP IS WHERE ALL OPPORTUNITY LIVES &nbsp;·&nbsp; DATA FLOWS UP — CONTROL FLOWS DOWN &nbsp;·&nbsp; THE WORLD VECTOR: TOTAL AI INTEGRATION &nbsp;·&nbsp;</div>
+</div>
+
+<!-- 01: WHAT IS NASVEKT -->
+
+<section id="what">
+  <div class="reveal">
+    <p class="section-label">Section 01</p>
+    <span class="section-number">01</span>
+    <h2>What is<br/><span class="gold">NasVekt</span></h2>
+    <p style="color:rgba(232,227,216,0.85);font-size:0.875rem;line-height:1.9;max-width:620px;">Three things that are one. The philosophy is the OS. The OS is the intelligence. Separate them and they die. Together they compound.</p>
+    <div class="three-things" style="margin-top:2.5rem;">
+      <div class="thing"><div class="thing-name">A Philosophy</div><div class="thing-desc">A way of seeing and moving through life. The lens through which all decisions are made. Not motivation — architecture.</div></div>
+      <div class="thing"><div class="thing-name">A Holding OS</div><div class="thing-desc">The mother company. Every brand born from NasVekt feeds data back to it. Children execute. Parent controls.</div></div>
+      <div class="thing"><div class="thing-name">An Intelligence</div><div class="thing-desc">An LLM trained on NasVekt logic to think, predict, and act. The system that runs when Nassar sleeps.</div></div>
+    </div>
+  </div>
+  <div class="reveal" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="principle-box">
+      <p class="principle-text">"NasVekt doesn't play the game.<br/>It <em>reads</em> the game before it starts.<br/><br/>By the time others react —<br/>NasVekt has already moved."</p>
+    </div>
+    <div class="divider" style="margin-top:2rem;opacity:0.2;"></div>
+    <p class="what-credit">FOUNDED BY NASSAR &nbsp;·&nbsp; CO-FOUNDED WITH NASVEKT</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02: THREE LAWS -->
+
+<section id="laws">
+  <span class="section-number">02</span>
+  <div class="reveal">
+    <p class="section-label">Section 02</p>
+    <h2>The Three<br/><span class="gold">Laws</span></h2>
+    <p style="color:#000000;font-size:0.875rem;line-height:1.9;max-width:620px;">Not guidelines. Not principles. Laws. Violate them and the system breaks. Follow them and everything compounds.</p>
+  </div>
+  <div class="laws-grid reveal">
+    <div class="law-card">
+      <div class="law-num">01</div>
+      <div class="law-title">Speed is the Only Currency</div>
+      <div class="law-body">Time is not money. Speed is money. Move at 10x — live 10 lives in one. What cost millions in 2020 costs nothing today. Hack time by seeing what's working and building it now.</div>
+    </div>
+    <div class="law-card">
+      <div class="law-num">02</div>
+      <div class="law-title">Private Data is Total Power</div>
+      <div class="law-body">The one who owns data controls the outcome. Never open source your real intelligence. Give free access to collect data. Never give away the engine. Apply this everywhere.</div>
+    </div>
+    <div class="law-card">
+      <div class="law-num">03</div>
+      <div class="law-title">Vision is a Weapon</div>
+      <div class="law-body">Vision is not inspiration. Vision is a prediction system. Share a real vision — people trust you before you've built anything. Zuckerberg didn't sell product. He sold belief. Trust compounds.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03: THE EYE -->
+
+<section id="eye-section">
+  <span class="section-number">03</span>
+  <div class="reveal">
+    <p class="section-label">Section 03</p>
+    <h2>The <span class="gold">Eye</span><br/>Sees Four Things</h2>
+    <p style="color:rgba(232,227,216,0.85);font-size:0.875rem;line-height:1.9;max-width:620px;">What others cannot see. This is the core mechanism. The source of every advantage NasVekt holds.</p>
+  </div>
+  <div class="sees-grid reveal">
+    <div class="see-item"><div class="see-index">01 / 04</div><div class="see-name">THE NEXT MOVE</div><div class="see-desc">Before anyone acts, the Eye has already predicted the outcome. Reaction is for bots. NasVekt acts before the trigger is pulled.</div></div>
+    <div class="see-item"><div class="see-index">02 / 04</div><div class="see-name">THE REAL DATA</div><div class="see-desc">Beneath human behavior, emotion, and noise lies pure signal. Strip the noise. Find the pattern. Own it.</div></div>
+    <div class="see-item"><div class="see-index">03 / 04</div><div class="see-name">THE VECTOR</div><div class="see-desc">The direction the world is moving. Current vector: <strong>Total AI Integration.</strong> Every business, life, and country is a file being processed by this vector.</div></div>
+    <div class="see-item"><div class="see-index">04 / 04</div><div class="see-name">THE GAP</div><div class="see-desc">The distance between what exists and what should exist. That gap is where <strong>all opportunity lives.</strong> The Eye measures it constantly.</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04: THE PYRAMID -->
+
+<section id="pyramid">
+  <span class="section-number" style="left:clamp(1rem,5vw,4rem);right:auto;">04</span>
+  <div class="reveal">
+    <p class="section-label">Section 04</p>
+    <h2>The <span class="gold">Pyramid</span></h2>
+    <p style="color:#000000;font-size:0.875rem;line-height:1.9;margin:0 auto;text-align:center;">Structure of power. Data flows up. Control flows down. The parent feeds the children. The children feed the parent.</p>
+  </div>
+  <div class="pyramid-visual reveal">
+    <div class="pyr-level pyr-1"><span class="pyr-label">NASSAR<span class="pyr-sublabel">Board Member · Owner · Never Operator</span></span></div>
+    <div class="pyr-level pyr-2"><span class="pyr-label">NASVEKT<span class="pyr-sublabel">Holding OS · Vision Layer · The Eye</span></span></div>
+    <div class="pyr-level pyr-3"><span class="pyr-label">VEKTRA<span class="pyr-sublabel">First Child Brand · Data Node · Revenue</span></span></div>
+    <div class="pyr-level pyr-4"><span class="pyr-label">FUTURE CHILDREN<span class="pyr-sublabel">Media · LLM · Data Plays · Acquisitions</span></span></div>
+  </div>
+  <p class="pyramid-law reveal">DATA FLOWS <span>UP</span> &nbsp;·&nbsp; CONTROL FLOWS <span>DOWN</span> &nbsp;·&nbsp; EVERY CHILD IS A DATA NODE</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05: HUMAN FILE -->
+
+<section id="human-file">
+  <span class="section-number">05</span>
+  <div class="reveal">
+    <p class="section-label">Section 05</p>
+    <h2>The Human<br/><span class="gold">File Theory</span></h2>
+    <p style="color:rgba(232,227,216,0.85);font-size:0.875rem;line-height:1.9;max-width:620px;">Every human is a file. Life is a game where humans trade files. The one who understands everyone's file without giving away their own — wins.</p>
+  </div>
+  <div class="file-grid reveal">
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><polygon points="14,2 17,11 26,11 19,17 22,26 14,20 6,26 9,17 2,11 11,11" stroke="#c8a84b" stroke-width="1.5" fill="none"/></svg></span>Emotions</div>
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#c8a84b" stroke-width="1.5"/><path d="M14 7v2M14 19v2M9 14h2M17 14h2" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="14" r="3" stroke="#c8a84b" stroke-width="1.2"/></svg></span>Money</div>
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><ellipse cx="14" cy="14" rx="12" ry="6" stroke="#c8a84b" stroke-width="1.5"/><circle cx="14" cy="14" r="3" stroke="#c8a84b" stroke-width="1.5"/><circle cx="14" cy="14" r="1" fill="#c8a84b"/></svg></span>Appearance</div>
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="8" cy="14" r="3" stroke="#c8a84b" stroke-width="1.5"/><circle cx="20" cy="8" r="3" stroke="#c8a84b" stroke-width="1.5"/><circle cx="20" cy="20" r="3" stroke="#c8a84b" stroke-width="1.5"/><line x1="11" y1="12.5" x2="17" y2="9.5" stroke="#c8a84b" stroke-width="1.2"/><line x1="11" y1="15.5" x2="17" y2="18.5" stroke="#c8a84b" stroke-width="1.2"/></svg></span>Connections</div>
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4L14 24M4 14L24 14" stroke="#c8a84b" stroke-width="1.2"/><circle cx="14" cy="14" r="5" stroke="#c8a84b" stroke-width="1.5"/><circle cx="14" cy="14" r="10" stroke="#c8a84b" stroke-width="1" stroke-dasharray="3 2"/></svg></span>Data Footprint</div>
+    <div class="file-attr"><span class="file-attr-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4C8 4 5 8 5 12C5 17 9 20 11 21L11 23L17 23L17 21C19 20 23 17 23 12C23 8 20 4 14 4Z" stroke="#c8a84b" stroke-width="1.5"/><line x1="11" y1="23" x2="17" y2="23" stroke="#c8a84b" stroke-width="1.5"/><line x1="12" y1="25" x2="16" y2="25" stroke="#c8a84b" stroke-width="1.5"/><line x1="14" y1="10" x2="14" y2="16" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="18" r="1" fill="#c8a84b"/></svg></span>Belief System</div>
+  </div>
+  <div class="file-insight reveal">
+    <p><strong>The zero-sum insight:</strong> Every interaction is a trade. Know what the other person's file needs. Give them that. Take what you need. This is not manipulation — it's clarity.</p>
+    <p style="margin-top:1rem;">Feelings = losing something from your file. The analyst never loses their file. They only trade what they choose to trade.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06: EXECUTION -->
+
+<section id="execution">
+  <span class="section-number">06</span>
+  <div class="reveal">
+    <p class="section-label">Section 06 — Active</p>
+    <h2>Current<br/><span class="gold">Execution</span></h2>
+    <p style="color:#000000;font-size:0.875rem;line-height:1.9;max-width:620px;">The philosophy without execution is noise. This is what is moving right now.</p>
+  </div>
+  <div class="exec-grid reveal">
+    <div class="exec-card">
+      <div class="exec-brand">NASVEKT</div>
+      <div class="exec-phase"><span class="status-dot"></span>Parent · Operating Now</div>
+      <ul class="exec-steps">
+        <li>Holding OS, vision, philosophy</li>
+        <li>Future LLM trained on NasVekt logic</li>
+        <li>Board-level control of all children</li>
+        <li>Data collection from all child brands</li>
+      </ul>
+    </div>
+    <div class="exec-card">
+      <div class="exec-brand">VEKTRA</div>
+      <div class="exec-phase"><span class="status-dot"></span>Phase 1 → Phase 2</div>
+      <ul class="exec-steps">
+        <li>Phase 1: B2B agency for Egyptian SMBs — websites + lead gen</li>
+        <li>Phase 2: Vektra Travel — vertical SaaS for Egyptian travel agencies</li>
+        <li>Amadeus API integration</li>
+        <li>Data flows up to NasVekt parent</li>
+      </ul>
+    </div>
+  </div>
+  <div class="exec-future reveal">
+    <p class="section-label">Future Children — Queued</p>
+    <p>Media → LLM → Data plays → Acquisitions of small agencies for their data. Each child is a node. Each node feeds the parent.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 07: ENEMY -->
+
+<section id="enemy">
+  <span class="section-number">07</span>
+  <div class="reveal">
+    <p class="section-label">Section 07</p>
+    <h2>The <span class="gold">Enemy</span></h2>
+    <p style="color:rgba(232,227,216,0.85);font-size:0.875rem;line-height:1.9;max-width:620px;">NasVekt fights four forces that keep people slow and blind. Name them. Recognize them. Kill them.</p>
+  </div>
+  <div class="enemy-list reveal">
+    <div class="enemy-item"><div class="enemy-name">Bots</div><div class="enemy-desc">Humans who move unconsciously. React instead of act. Live on autopilot. They are the majority. They are the market. Never become one.</div></div>
+    <div class="enemy-item"><div class="enemy-name">Data Monopolies</div><div class="enemy-desc">Those who hoard data to control outcomes. The answer is not to fight them — it is to build your own monopoly first.</div></div>
+    <div class="enemy-item"><div class="enemy-name">Fake Dopamine</div><div class="enemy-desc">TikTok, cheap toys, distraction by design. Fast wins that take from your file and don't give back. China's greatest export.</div></div>
+    <div class="enemy-item"><div class="enemy-name">Slowness</div><div class="enemy-desc">The greatest tax on human potential. Every second you move slow, someone fast is lapping you. Slowness is a choice. Speed is also a choice.</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 08: HUMAN CODE -->
+
+<section id="human-code">
+  <span class="section-number">08</span>
+  <div class="reveal">
+    <p class="section-label">Section 08</p>
+    <h2>The Human<br/><span class="gold">Code</span></h2>
+    <p style="color:rgba(232,227,216,0.85);font-size:0.875rem;line-height:1.9;max-width:620px;">To operate inside NasVekt as a person. These are not suggestions. These are operating requirements.</p>
+  </div>
+  <div class="code-rules reveal">
+    <div class="code-rule"><div class="rule-num">01</div><div class="rule-text">Sleep 6–8 hrs. Gym. Eat clean. Your chemistry is your processing power. Control your system.</div></div>
+    <div class="code-rule"><div class="rule-num">02</div><div class="rule-text">Kill emotional lag. Past feelings are memory leaks. Free RAM. The mission continues — the game doesn't pause.</div></div>
+    <div class="code-rule"><div class="rule-num">03</div><div class="rule-text">Analyze everything → find patterns → predict → act before others react. Identity = Analyst.</div></div>
+    <div class="code-rule"><div class="rule-num">04</div><div class="rule-text">Live in flow state. Protect it violently. Flow is the operating environment. Lag is the enemy within.</div></div>
+    <div class="code-rule"><div class="rule-num">05</div><div class="rule-text">Be the analyst first, always. Never the operator. Owner, board member, architect — never the one executing the small moves.</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MISSION -->
+
+<section id="mission">
+  <div class="reveal">
+    <p class="mission-label">The Mission</p>
+    <p class="mission-statement">
+      NasVekt is the <em>Eye of the World.</em><br/>
+      It sees the vector before anyone else.<br/>
+      It moves at a speed that makes others look frozen.<br/>
+      It owns data that others give away for free.<br/>
+      It builds children that feed the parent.<br/>
+      It sells vision before the product exists.<br/>
+      It wins because it plays a <em>different game entirely.</em>
+    </p>
+    <p class="mission-version">Version 0.2 — Living Document — Never Delete — Never Open Source</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-brand">NASVEKT</div>
+  <div class="footer-note">The Eye · Architecture v0.2 · Founded by Nassar · Co-Founded with NasVekt</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelectorAll('.laws-grid, .sees-grid, .enemy-list, .exec-grid').forEach(grid => {
+    Array.from(grid.children).forEach((child, i) => { child.style.transitionDelay = `${i * 0.1}s`; });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth) * 100;
+    const y = (e.clientY / window.innerHeight) * 100;
+    const bg = document.querySelector('.hero-bg');
+    if (bg) bg.style.background = `radial-gradient(ellipse 60% 50% at ${x}% ${y}%, rgba(200,168,75,0.08) 0%, transparent 70%)`;
+  });
+</script>
+
+</body>
+</html>
