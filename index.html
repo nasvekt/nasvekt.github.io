@@ -1278,78 +1278,47 @@
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+/* ══════════════════════════════════════
+   NASVEKT ANALYZER — GEMINI API
+══════════════════════════════════════ */
+async function runAnalyzer() {
+  const input  = document.getElementById('analyzerInput').value.trim();
+  const btn    = document.getElementById('analyzerBtn');
+  const output = document.getElementById('analyzerOutput');
+  const error  = document.getElementById('analyzerError');
 
-    /* ══════════════════════════════════════
-       NASVEKT ANALYZER — ANTHROPIC API
-    ══════════════════════════════════════ */
-    async function runAnalyzer() {
-      const input  = document.getElementById('analyzerInput').value.trim();
-      const btn    = document.getElementById('analyzerBtn');
-      const output = document.getElementById('analyzerOutput');
-      const error  = document.getElementById('analyzerError');
+  if (!input) {
+    error.textContent = 'The Eye needs input. Describe your idea or move.';
+    error.classList.add('visible');
+    return;
+  }
 
-      if (!input) {
-        error.textContent = 'The Eye needs input. Describe your idea or move.';
-        error.classList.add('visible');
-        return;
-      }
+  error.classList.remove('visible');
+  output.classList.remove('visible');
+  btn.classList.add('loading');
+  btn.disabled = true;
 
-      error.classList.remove('visible');
-      output.classList.remove('visible');
-      btn.classList.add('loading');
-      btn.disabled = true;
+  try {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input })
+    });
 
-      const systemPrompt = `You are the NasVekt Eye — an AI analysis system trained on NasVekt philosophy.
+    if (!response.ok) throw new Error(`Server error ${response.status}`);
 
-NasVekt philosophy:
-- Three Laws: (1) Speed is the only currency. (2) Private data is total power. (3) Vision is a weapon.
-- The Eye sees: The Next Move, The Real Data, The Vector (current: Total AI Integration), The Gap.
-- The Enemy: Bots (unconscious humans), Data monopolies, Fake dopamine, Slowness.
-- Human File Theory: Every human is a file with Emotions, Money, Appearance, Connections, Data Footprint, Belief System.
-- Identity: Analyst first, always. Never operator. Board member, never executor.
+    const data = await response.json();
+    const raw  = data.result || '';
 
-Your job: Analyze the user's idea or business through the NasVekt lens. Be direct. No fluff. Think like an analyst who sees the game before it starts.
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch {
+      throw new Error('The Eye could not parse the signal. Try again.');
+    }
 
-Respond ONLY with valid JSON in this exact structure — no markdown, no code blocks, just raw JSON:
-{
-  "speed_score": <number 0-100>,
-  "data_score": <number 0-100>,
-  "vision_score": <number 0-100>,
-  "gap": "<2-3 sentences: what gap does this exploit or miss>",
-  "signal": "<2-3 sentences: the real underlying pattern or insight the Eye sees>",
-  "kills": ["<thing to eliminate immediately>", "<thing to eliminate immediately>", "<thing to eliminate immediately>"],
-  "next_move": "<1-2 sentences: the single most important next action, specific and fast>",
-  "final_verdict": "<1 powerful sentence the Eye delivers as its final read on this>"
-}`;
+    renderOutput(parsed);
 
-      try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            system: systemPrompt,
-            messages: [{ role: 'user', content: input }]
-          })
-        });
-
-        if (!response.ok) {
-          const err = await response.json();
-          throw new Error(err.error?.message || `API error ${response.status}`);
-        }
-
-        const data = await response.json();
-        const raw  = data.content?.[0]?.text || '';
-
-        let parsed;
-        try {
-          parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
-        } catch {
-          throw new Error('The Eye could not parse the signal. Try again.');
-        }
-
-        renderOutput(parsed);
 
       } catch (err) {
         error.textContent = `Eye error: ${err.message}`;
